@@ -3,6 +3,7 @@ package routes
 import (
 	"cfa-tools-api/src/app"
 	"cfa-tools-api/src/e"
+	"cfa-tools-api/src/middleware"
 	"cfa-tools-api/src/models"
 
 	"github.com/gin-gonic/gin"
@@ -64,6 +65,13 @@ func UserRoutes(r *gin.Engine, db *app.Database) {
 		c.SetCookie("session-token", sessionResult.SessionId, 86400, "/", "localhost", true, true)
 		c.JSON(200, gin.H{
 			"msg": "user logged in",
+		})
+	})
+
+	// getting a user
+	r.GET("/user", middleware.Auth, func(c *gin.Context)  {
+		c.JSON(200, gin.H{
+			"msg": "getting user",
 		})
 	})
 
