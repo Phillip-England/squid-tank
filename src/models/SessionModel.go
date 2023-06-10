@@ -1,15 +1,20 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type SessionModel struct {
-	UserId string
-	Expiration time.Time
+	User primitive.ObjectID `bson:"user"`
+	Expiration time.Time `bson:"expiration"`
 }
 
-func NewSessionModel(userId string) SessionModel {
+func NewSessionModel(user string) SessionModel {
+	objectid, _ := primitive.ObjectIDFromHex(user)
 	return SessionModel{
-		UserId: userId,
+		User: objectid,
 		Expiration: time.Now().Add(24 * time.Hour),
 	}
 }

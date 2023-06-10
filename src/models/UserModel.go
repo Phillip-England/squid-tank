@@ -12,11 +12,11 @@ type UserModel struct {
 	Password string `bson:"password"`
 }
 
-func (v UserModel) Format() {
+func (v *UserModel) Format() {
 	v.Email = strings.ToLower(v.Email)
 }
 
-func (v UserModel) Validate() *e.HttpError {
+func (v *UserModel) Validate() *e.HttpError {
 	err := v.ValidateEmail()
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func (v UserModel) Validate() *e.HttpError {
 	return nil
 }
 
-func (v UserModel) ValidateEmail() *e.HttpError {
+func (v *UserModel) ValidateEmail() *e.HttpError {
 	_, err := mail.ParseAddress(v.Email)
 	if err != nil {
 		return e.NewHttpError("invalid email", 400)
@@ -36,7 +36,7 @@ func (v UserModel) ValidateEmail() *e.HttpError {
 	return nil
 }
 
-func (v UserModel) ValidatePassword() *e.HttpError {
+func (v *UserModel) ValidatePassword() *e.HttpError {
 	if len(v.Password) > 64 {
 		return e.NewHttpError("password too long", 400)
 	}
@@ -46,7 +46,7 @@ func (v UserModel) ValidatePassword() *e.HttpError {
 	return nil
 }
 
-func (v UserModel) HashPassword() *e.HttpError {
+func (v *UserModel) HashPassword() *e.HttpError {
 	hashed_password, err := lib.HashString(v.Password)
 	if err != nil {
 		return e.NewHttpError("internal server error", 500)

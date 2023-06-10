@@ -22,7 +22,7 @@ func (v *HttpError) Error() string {
 	return fmt.Sprintf(v.Message)
 }
 
-func (v *HttpError) HttpExit(c *gin.Context) {
+func (v *HttpError) Exit(c *gin.Context) {
 	c.JSON(v.Code, gin.H{
 		"msg": v.Message,
 	})

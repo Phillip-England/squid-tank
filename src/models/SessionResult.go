@@ -7,17 +7,17 @@ import (
 )
 
 type SessionResult struct {
-	SessionId string
-	UserId string
-	Expiration time.Time
+	Id string `bson:"_id"`
+	User primitive.ObjectID `bson:"user"`
+	Expiration time.Time `bson:"expiration"`
 }
 
 func NewSessionResult(sessionId interface{}, sessionModel SessionModel) SessionResult {
 	objectId := sessionId.(primitive.ObjectID)
 	stringId := objectId.Hex()
 	return SessionResult{
-		SessionId: stringId,
-		UserId: sessionModel.UserId,
+		Id: stringId,
+		User: sessionModel.User,
 		Expiration: sessionModel.Expiration,
 	}
 }

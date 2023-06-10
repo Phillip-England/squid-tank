@@ -6,25 +6,25 @@ import (
 )
 
 type UserResult struct {
-	ID string 
-	Email string
-	Password string
+	Id string `bson:"_id"`
+	Email string `bson:"email"`
+	Password string `bson:"password"`
 }
 
-func NewUserResult(_id interface{}, model UserModel) UserResult {
+func NewUserResult(_id interface{}, email string, password string) UserResult {
 	objectId, _ := _id.(primitive.ObjectID)
 	stringId := objectId.Hex()
 	return UserResult{
-		ID: stringId,
-		Email: model.Email,
-		Password: model.Password,
+		Id: stringId,
+		Email: email,
+		Password: password,
 	}
 }
 
-func (v UserResult) Respond(c *gin.Context) {
-	c.JSON(201, gin.H{
-		"msg": "user created",
-		"_id": v.ID,
+func (v UserResult) Respond(c *gin.Context, code int, message string) {
+	c.JSON(code, gin.H{
+		"msg": message,
+		"_id": v.Id,
 		"email": v.Email,
 	})
 }

@@ -5,15 +5,16 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type UserDb struct {
 	Collection *mongo.Collection
-	UserModel UserModel
+	UserModel *UserModel
 }
 
-func NewUserDb(coll *mongo.Collection, model UserModel) UserDb {
+func NewUserDb(coll *mongo.Collection, model *UserModel) UserDb {
 	return UserDb{
 		Collection: coll,
 		UserModel: model,
@@ -26,7 +27,7 @@ func (v UserDb) Insert() (*UserResult, *e.HttpError) {
 		return nil, err
 	}
 	result, _ := v.Collection.InsertOne(context.Background(), v.UserModel)
-	userResult := NewUserResult(result.InsertedID, v.UserModel)
+	userResult := NewUserResult(result.InsertedID, v.UserModel.Email, v.UserModel.Password)
 	return &userResult, nil
 }
 
@@ -48,6 +49,19 @@ func (v UserDb) FindByEmail() (*UserResult, *e.HttpError) {
 			return nil, e.NewHttpError("user does not exist", 400)
 		}
 		return nil, e.NewHttpError("internal server error", 500)
+	}
+	return &result, nil
+}
+
+func (v UserDb) FindById(userid primitive.ObjectID) (*UserResult, *e.HttpError) {
+	var result UserResult
+	filter := bson.D{{Key: "_id", Value: userid}}
+	err := v.Collection.FindOne(context.Background(), filter).Decode(&result)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, e.NewHttpError("user does not exist", 400)
+		}
+		return nil, e.NewHttpError("internal server error", 400)
 	}
 	return &result, nil
 }
